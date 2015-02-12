@@ -1,10 +1,23 @@
-MORE_CFLAGS += -DGP2X -DPANDORA -DRASPBERRY -DUSE_VKBD
+ifeq ($(CFLAGS),)
 
-NAME   = uae4all
+ifeq ($(TARGET),$(filter $(TARGET),pi2 bananapi))
+	CFLAGS += -DUSE_ARMV7 -DUSE_ARMNEON
+	ARCH_FLAGS += -mcpu=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard
+	NEON=1
+else ifeq ($(TARGET),pi1)
+	ARCH_FLAGS += -mcpu=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard
+else
+	ARCH_FLAGS += -march=armv6j -mfpu=vfp -mfloat-abi=hard
+endif
+
+endif
+
+CFLAGS += $(ARCH_FLAGS)
+
+PROG   = uae4all
 O      = o
 RM     = rm -f
-
-PROG   = $(NAME)
+STRIP  = strip
 
 all: $(PROG)
 
@@ -19,21 +32,17 @@ GUICHAN_GUI=1
 
 DEFAULT_CFLAGS = `sdl-config --cflags`
 
-#LDFLAGS = -lSDL  -lpthread  -lz -lSDL_image -lpng12 
 LDFLAGS = -lbcm_host -L/opt/vc/lib -lguichan -lguichan_sdl -lSDL_image -lz -lpng -lpthread `sdl-config --libs` -lSDL_ttf
 MORE_CFLAGS += -I/opt/vc/include -I/opt/vc/include/interface/vmcs_host/linux -I/opt/vc/include/interface/vcos/pthreads
 MORE_CFLAGS +=   -Isrc -Isrc/gp2x -Isrc/vkbd -Isrc/menu -Isrc/include -Isrc/gp2x/menu -fomit-frame-pointer -Wno-unused -Wno-format -DUSE_SDL -DGCCCONSTFUNC="__attribute__((const))" -DUSE_UNDERSCORE -fexceptions -DUNALIGNED_PROFITABLE -DOPTIMIZED_FLAGS -DSHM_SUPPORT_LINKS=0 -DOS_WITHOUT_MEMORY_MANAGEMENT 
-#-DMENU_MUSIC
 
+MORE_CFLAGS += -DGP2X -DPANDORA -DRASPBERRY -DUSE_VKBD
 MORE_CFLAGS += -DROM_PATH_PREFIX=\"./\" -DDATA_PREFIX=\"./data/\" -DSAVE_PREFIX=\"./saves/\"
 
-#MORE_CFLAGS += -msoft-float -ffast-math
-MORE_CFLAGS += -march=armv6zk -mcpu=arm1176jzf-s -mtune=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard -ffast-math
+
 ifndef DEBUG
-MORE_CFLAGS += -O2
-MORE_CFLAGS += -fstrict-aliasing -mstructure-size-boundary=32 -fexpensive-optimizations
-MORE_CFLAGS += -fweb -frename-registers -fomit-frame-pointer
-#MORE_CFLAGS += -falign-functions=32 -falign-loops -falign-labels -falign-jumps
+MORE_CFLAGS += -O2 -ffast-math
+MORE_CFLAGS += -fstrict-aliasing -mstructure-size-boundary=32
 MORE_CFLAGS += -falign-functions=32
 MORE_CFLAGS += -finline -finline-functions -fno-builtin
 else
@@ -42,7 +51,7 @@ endif
 
 MORE_CFLAGS+=-DUSE_EMULATED_JOYSTICK
 
-ASFLAGS += -mfloat-abi=soft -Wall
+ASFLAGS += $(ARCH_FLAGS)
 
 MORE_CFLAGS+= -DUSE_AUTOCONFIG
 MORE_CFLAGS+= -DUSE_ZFILE
@@ -51,7 +60,7 @@ MORE_CFLAGS+= -DFAME_INTERRUPTS_PATCH
 MORE_CFLAGS+= -DSAFE_MEMORY_ACCESS
 #MORE_CFLAGS+= -DDEBUG_SAVESTATE
 
-CFLAGS  = $(DEFAULT_CFLAGS) $(MORE_CFLAGS)
+CFLAGS  += $(DEFAULT_CFLAGS) $(MORE_CFLAGS)
 
 OBJS =	\
 	src/audio.o \
@@ -61,7 +70,6 @@ OBJS =	\
 	src/blitter.o \
 	src/cfgfile.o \
 	src/cia.o \
-	src/compiler.o \
 	src/savedisk.o \
 	src/savestate.o \
 	src/custom.o \
@@ -88,11 +96,18 @@ OBJS =	\
 	src/zfile.o \
 	src/menu/fade.o \
 	src/vkbd/vkbd.o \
+	src/gp2x/memcpy.o \
+	src/gp2x/memset.o \
 	src/gp2x/gp2x.o \
 	src/gp2x/inputmode.o \
 	src/gp2x/menu/menu_helper.o \
 	src/gp2x/menu/menu_config.o \
 	src/gp2x/menu/menu.o
+
+ifdef NEON
+	OBJS += src/neon_helper.o
+endif
+
 ifdef GUICHAN_GUI
 CFLAGS+= -DUSE_GUICHAN
 OBJS += src/menu_guichan/menu_guichan.o \
@@ -162,12 +177,10 @@ CPPFLAGS  = $(CFLAGS)
 
 $(PROG): $(OBJS)
 	$(CXX) $(CFLAGS) -o $(PROG) $(OBJS) $(LDFLAGS) -lpng
+
 ifndef DEBUG
 	$(STRIP) $(PROG)
 endif
-
-run: $(PROG)
-	./$(PROG)
 
 clean:
 	$(RM) $(PROG) $(OBJS)
