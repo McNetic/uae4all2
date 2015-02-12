@@ -1,18 +1,12 @@
-ifeq ($(CFLAGS),)
-
-ifeq ($(TARGET),$(filter $(TARGET),pi2 bananapi))
-	CFLAGS += -DUSE_ARMV7 -DUSE_ARMNEON
-	ARCH_FLAGS += -mcpu=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard
+ifneq (,$(filter $(TARGET),pi2 bananapi))
+	DEFS += -DUSE_ARMV7 -DUSE_ARMNEON
+	CPU_FLAGS += -mcpu=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard
 	NEON=1
 else ifeq ($(TARGET),pi1)
-	ARCH_FLAGS += -mcpu=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard
-else
-	ARCH_FLAGS += -march=armv6j -mfpu=vfp -mfloat-abi=hard
+	CPU_FLAGS += -mcpu=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard
+else ifeq ($(TARGET),armv6)
+	CPU_FLAGS += -march=armv6j -mfpu=vfp -mfloat-abi=hard
 endif
-
-endif
-
-CFLAGS += $(ARCH_FLAGS)
 
 PROG   = uae4all
 O      = o
@@ -30,10 +24,10 @@ NEWSDLSOUND=1
 GUICHAN_GUI=1
 #ANDROIDSDL=1
 
-DEFAULT_CFLAGS = `sdl-config --cflags`
 
-LDFLAGS = -lbcm_host -L/opt/vc/lib -lguichan -lguichan_sdl -lSDL_image -lz -lpng -lpthread `sdl-config --libs` -lSDL_ttf
-MORE_CFLAGS += -I/opt/vc/include -I/opt/vc/include/interface/vmcs_host/linux -I/opt/vc/include/interface/vcos/pthreads
+SDL_CFLAGS = `sdl-config --cflags`
+LDFLAGS = -lbcm_host -L/opt/vc/lib -Lguichan/src/.libs -Lguichan/src/sdl/.libs -lguichan_sdl -lguichan -lSDL_image -lz -lpng -lpthread `sdl-config --libs` -lSDL_ttf
+MORE_CFLAGS += -I/opt/vc/include -I/opt/vc/include/interface/vmcs_host/linux -I/opt/vc/include/interface/vcos/pthreads -I./guichan/include/
 MORE_CFLAGS +=   -Isrc -Isrc/gp2x -Isrc/vkbd -Isrc/menu -Isrc/include -Isrc/gp2x/menu -fomit-frame-pointer -Wno-unused -Wno-format -DUSE_SDL -DGCCCONSTFUNC="__attribute__((const))" -DUSE_UNDERSCORE -fexceptions -DUNALIGNED_PROFITABLE -DOPTIMIZED_FLAGS -DSHM_SUPPORT_LINKS=0 -DOS_WITHOUT_MEMORY_MANAGEMENT 
 
 MORE_CFLAGS += -DGP2X -DPANDORA -DRASPBERRY -DUSE_VKBD
@@ -51,8 +45,6 @@ endif
 
 MORE_CFLAGS+=-DUSE_EMULATED_JOYSTICK
 
-ASFLAGS += $(ARCH_FLAGS)
-
 MORE_CFLAGS+= -DUSE_AUTOCONFIG
 MORE_CFLAGS+= -DUSE_ZFILE
 MORE_CFLAGS+= -DFAME_INTERRUPTS_PATCH
@@ -60,7 +52,12 @@ MORE_CFLAGS+= -DFAME_INTERRUPTS_PATCH
 MORE_CFLAGS+= -DSAFE_MEMORY_ACCESS
 #MORE_CFLAGS+= -DDEBUG_SAVESTATE
 
-CFLAGS  += $(DEFAULT_CFLAGS) $(MORE_CFLAGS)
+CFLAGS  += $(CPU_FLAGS) $(SDL_CFLAGS) $(DEFS) $(MORE_CFLAGS)
+
+ifdef NEON
+	ASFLAGS += -mfpu=neon
+endif
+ASFLAGS += -mfloat-abi=hard
 
 OBJS =	\
 	src/audio.o \
