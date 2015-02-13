@@ -216,7 +216,6 @@ void run()
 
 
                 case SDLK_LALT:
-                case SDLK_LCTRL:
                     if(widgets::window_load->isVisible() || widgets::window_warning->isVisible() || widgets::window_config->isVisible())
                         break;
                     if (emulating) {
