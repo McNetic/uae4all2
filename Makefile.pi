@@ -25,34 +25,34 @@ GUICHAN_GUI=1
 #ANDROIDSDL=1
 
 
-SDL_CFLAGS = `sdl-config --cflags`
+SDL_CXXFLAGS = `sdl-config --cflags`
 LDFLAGS = -lbcm_host -L/opt/vc/lib -Lguichan/src/.libs -Lguichan/src/sdl/.libs -lguichan_sdl -lguichan -lSDL_image -lz -lpng -lpthread `sdl-config --libs` -lSDL_ttf
-MORE_CFLAGS += -I/opt/vc/include -I/opt/vc/include/interface/vmcs_host/linux -I/opt/vc/include/interface/vcos/pthreads -I./guichan/include/
-MORE_CFLAGS +=   -Isrc -Isrc/gp2x -Isrc/vkbd -Isrc/menu -Isrc/include -Isrc/gp2x/menu -fomit-frame-pointer -Wno-unused -Wno-format -DUSE_SDL -DGCCCONSTFUNC="__attribute__((const))" -DUSE_UNDERSCORE -fexceptions -DUNALIGNED_PROFITABLE -DOPTIMIZED_FLAGS -DSHM_SUPPORT_LINKS=0 -DOS_WITHOUT_MEMORY_MANAGEMENT 
+MORE_CXXFLAGS += -I/opt/vc/include -I/opt/vc/include/interface/vmcs_host/linux -I/opt/vc/include/interface/vcos/pthreads -I./guichan/include/
+MORE_CXXFLAGS +=   -Isrc -Isrc/gp2x -Isrc/vkbd -Isrc/menu -Isrc/include -Isrc/gp2x/menu -fomit-frame-pointer -Wno-unused -Wno-format -DUSE_SDL -DGCCCONSTFUNC="__attribute__((const))" -DUSE_UNDERSCORE -fexceptions -DUNALIGNED_PROFITABLE -DOPTIMIZED_FLAGS -DSHM_SUPPORT_LINKS=0 -DOS_WITHOUT_MEMORY_MANAGEMENT 
 
-MORE_CFLAGS += -DGP2X -DPANDORA -DRASPBERRY -DUSE_VKBD
-MORE_CFLAGS += -DROM_PATH_PREFIX=\"./\" -DDATA_PREFIX=\"./data/\" -DSAVE_PREFIX=\"./saves/\"
+MORE_CXXFLAGS += -DGP2X -DPANDORA -DRASPBERRY -DUSE_VKBD
+MORE_CXXFLAGS += -DROM_PATH_PREFIX=\"./\" -DDATA_PREFIX=\"./data/\" -DSAVE_PREFIX=\"./saves/\"
 
 
 ifndef DEBUG
-MORE_CFLAGS += -O2 -ffast-math
-MORE_CFLAGS += -fstrict-aliasing -mstructure-size-boundary=32
-MORE_CFLAGS += -falign-functions=32
-MORE_CFLAGS += -finline -finline-functions -fno-builtin
+MORE_CXXFLAGS += -O2 -ffast-math
+MORE_CXXFLAGS += -fstrict-aliasing -mstructure-size-boundary=32
+MORE_CXXFLAGS += -falign-functions=32
+MORE_CXXFLAGS += -finline -finline-functions -fno-builtin
 else
-MORE_CFLAGS += -ggdb -DDEBUG_GFX 
+MORE_CXXFLAGS += -ggdb -DDEBUG_GFX 
 endif
 
-MORE_CFLAGS+=-DUSE_EMULATED_JOYSTICK
+MORE_CXXFLAGS+=-DUSE_EMULATED_JOYSTICK
 
-MORE_CFLAGS+= -DUSE_AUTOCONFIG
-MORE_CFLAGS+= -DUSE_ZFILE
-MORE_CFLAGS+= -DFAME_INTERRUPTS_PATCH
+MORE_CXXFLAGS+= -DUSE_AUTOCONFIG
+MORE_CXXFLAGS+= -DUSE_ZFILE
+MORE_CXXFLAGS+= -DFAME_INTERRUPTS_PATCH
 # Turrican3 becomes unstable if this is not enabled
-MORE_CFLAGS+= -DSAFE_MEMORY_ACCESS
-#MORE_CFLAGS+= -DDEBUG_SAVESTATE
+MORE_CXXFLAGS+= -DSAFE_MEMORY_ACCESS
+#MORE_CXXFLAGS+= -DDEBUG_SAVESTATE
 
-CFLAGS  += $(CPU_FLAGS) $(SDL_CFLAGS) $(DEFS) $(MORE_CFLAGS)
+CXXFLAGS  += $(CPU_FLAGS) $(SDL_CXXFLAGS) $(DEFS) $(MORE_CXXFLAGS)
 
 ifdef NEON
 	ASFLAGS += -mfpu=neon
@@ -106,7 +106,7 @@ ifdef NEON
 endif
 
 ifdef GUICHAN_GUI
-CFLAGS+= -DUSE_GUICHAN
+CXXFLAGS+= -DUSE_GUICHAN
 OBJS += src/menu_guichan/menu_guichan.o \
 	src/menu_guichan/menuTabMain.o \
 	src/menu_guichan/menuTabFloppy.o \
@@ -135,7 +135,7 @@ OBJS += src/gp2x/menu/menu_fileinfo.o \
 endif
 
 ifdef SDLSOUND
-CFLAGS+= -DUSE_SDLSOUND
+CXXFLAGS+= -DUSE_SDLSOUND
 OBJS += src/sound.o
 else
 ifdef NEWSDLSOUND
@@ -147,13 +147,13 @@ endif
 
 ifdef FAME_CORE
 ifdef FAME_CORE_C
-CFLAGS+=-DUSE_FAME_CORE -DUSE_FAME_CORE_C -DFAME_IRQ_CLOCKING -DFAME_CHECK_BRANCHES -DFAME_EMULATE_TRACE -DFAME_DIRECT_MAPPING -DFAME_BYPASS_TAS_WRITEBACK -DFAME_ACCURATE_TIMING -DFAME_GLOBAL_CONTEXT -DFAME_FETCHBITS=8 -DFAME_DATABITS=8 -DFAME_NO_RESTORE_PC_MASKED_BITS
-CFLAGS+=-DWITH_TESTMODE
+CXXFLAGS+=-DUSE_FAME_CORE -DUSE_FAME_CORE_C -DFAME_IRQ_CLOCKING -DFAME_CHECK_BRANCHES -DFAME_EMULATE_TRACE -DFAME_DIRECT_MAPPING -DFAME_BYPASS_TAS_WRITEBACK -DFAME_ACCURATE_TIMING -DFAME_GLOBAL_CONTEXT -DFAME_FETCHBITS=8 -DFAME_DATABITS=8 -DFAME_NO_RESTORE_PC_MASKED_BITS
+CXXFLAGS+=-DWITH_TESTMODE
 
 src/m68k/fame/famec.o: src/m68k/fame/famec.cpp
 OBJS += src/m68k/fame/famec.o
 else
-CFLAGS+=-DUSE_FAME_CORE
+CXXFLAGS+=-DUSE_FAME_CORE
 src/m68k/fame/fame.o: src/m68k/fame/fame.asm
 	nasm src/m68k/fame/fame.asm
 OBJS += src/m68k/fame/fame.o
@@ -170,10 +170,8 @@ OBJS += \
 	src/m68k/uae/cpuemu.o
 endif
 
-CPPFLAGS  = $(CFLAGS)
-
 $(PROG): $(OBJS)
-	$(CXX) $(CFLAGS) -o $(PROG) $(OBJS) $(LDFLAGS) -lpng
+	$(CXX) -o $(PROG) $(OBJS) $(LDFLAGS) -lpng
 
 ifndef DEBUG
 	$(STRIP) $(PROG)
