@@ -506,20 +506,17 @@ void gui_handle_events (void)
 	dpadDown = keystate[SDLK_DOWN];
 	dpadLeft = keystate[SDLK_LEFT];
 	dpadRight = keystate[SDLK_RIGHT];
-	buttonA = keystate[SDLK_HOME];
-	buttonB = keystate[SDLK_END];
-	buttonX = keystate[SDLK_PAGEDOWN];
-	buttonY = keystate[SDLK_PAGEUP];
-	triggerL = keystate[SDLK_RSHIFT];
-	triggerR = keystate[SDLK_RCTRL];
-	buttonSelect = keystate[SDLK_LCTRL];
-	buttonStart = keystate[SDLK_LALT];
+	buttonA = keystate[SDLK_LSHIFT];
+	buttonB = keystate[SDLK_z];
+	buttonX = keystate[SDLK_LCTRL];
+	buttonY = keystate[SDLK_LALT];
+	triggerL = keystate[SDLK_PAGEUP];
+	triggerR = keystate[SDLK_PAGEDOWN];
+	buttonSelect = 0;
+	buttonStart = 0;
 
-	if(keystate[SDLK_LCTRL])
+	if(keystate[SDLK_LCTRL] && keystate[SDLK_ESCAPE])
 		goMenu();
-
-	if(keystate[SDLK_F12])
-		SDL_WM_ToggleFullScreen(prSDLScreen);
 
 #ifdef ANDROIDSDL
 
