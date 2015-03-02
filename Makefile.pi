@@ -26,7 +26,7 @@ GUICHAN_GUI=1
 
 
 SDL_CXXFLAGS = `sdl-config --cflags`
-LDFLAGS = -lbcm_host -L/opt/vc/lib -Lguichan/src/.libs -Lguichan/src/sdl/.libs -lguichan_sdl -lguichan -lSDL_image -lz -lpng -lpthread `sdl-config --libs` -lSDL_ttf
+LDFLAGS = -lbcm_host -L/opt/vc/lib -Lguichan/src/.libs -Lguichan/src/sdl/.libs -lguichan_sdl -lguichan -lSDL_image -lz -lpng -lpthread `sdl-config --libs` -lSDL_ttf -lrt
 MORE_CXXFLAGS += -I/opt/vc/include -I/opt/vc/include/interface/vmcs_host/linux -I/opt/vc/include/interface/vcos/pthreads -I./guichan/include/
 MORE_CXXFLAGS +=   -Isrc -Isrc/gp2x -Isrc/vkbd -Isrc/menu -Isrc/include -Isrc/gp2x/menu -fomit-frame-pointer -Wno-unused -Wno-format -DUSE_SDL -DGCCCONSTFUNC="__attribute__((const))" -DUSE_UNDERSCORE -fexceptions -DUNALIGNED_PROFITABLE -DOPTIMIZED_FLAGS -DSHM_SUPPORT_LINKS=0 -DOS_WITHOUT_MEMORY_MANAGEMENT 
 
