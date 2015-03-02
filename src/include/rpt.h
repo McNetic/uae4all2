@@ -6,25 +6,23 @@
   * Copyright 1998 Bernd Schmidt
   */
 
-#ifndef MACHDEP_RPT_H
-#define MACHDEP_RPT_H
-
-#include <sys/time.h>
+#ifndef _RPT_H_
+#define _RPT_H_
 
 typedef unsigned long frame_time_t;
-static int64_t fs_get_monotonic_time(void);
+
 extern int64_t g_uae_epoch;
 
-static inline frame_time_t read_processor_time() {
-    // with frame_time_t being int, the value will wrap around in
-    // about 23 days..
-    return (fs_get_monotonic_time() - g_uae_epoch);
+static __inline__ frame_time_t read_processor_time (void)
+{
+  int64_t time;
+  struct timespec ts;
+  
+  clock_gettime (CLOCK_MONOTONIC, &ts);
+
+  time = (((int64_t) ts.tv_sec) * 1000000) + (ts.tv_nsec / 1000);
+  return time - g_uae_epoch;
 }
 
-static int64_t fs_get_monotonic_time(void) {
-    struct timespec ts;
-    clock_gettime (CLOCK_MONOTONIC, &ts);
-    return (((int64_t) ts.tv_sec) * 1000000) + (ts.tv_nsec / 1000);
-}
+#endif /* _RPT_H_ */
 
-#endif // MACHDEP_RPT_H
