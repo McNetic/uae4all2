@@ -45,6 +45,10 @@ unsigned n_callback_sndbuff, n_render_sndbuff;
 uae_u16 *sndbufpt = sndbuffer[0];
 uae_u16 *render_sndbuff = sndbuffer[0];
 
+//#define DEBUG_SOUND
+//#undef dbg
+//#define dbg(a) printf(a)
+
 #ifdef NO_SOUND
 
 
@@ -221,7 +225,7 @@ void finish_sound_buffer (void)
 {
 	static int wrcnt = 2; // Start from the middle of the buffer
 #ifdef DEBUG_SOUND
-	dbg("sound.c : finish_sound_buffer");
+	//dbg("sound.c : finish_sound_buffer\n");
 #endif
 
 	//printf("finish %i\n", wrcnt);
@@ -243,7 +247,7 @@ void finish_sound_buffer (void)
 #endif
 
 #ifdef DEBUG_SOUND
-	dbg(" sound.c : ! finish_sound_buffer");
+	//dbg(" sound.c : ! finish_sound_buffer\n");
 #endif
 }
 
@@ -252,7 +256,7 @@ void finish_sound_buffer (void)
 int setup_sound (void)
 {
 #ifdef DEBUG_SOUND
-    dbg("sound.c : setup_sound");
+    dbg("sound.c : setup_sound\n");
 #endif
 
 	// Android does not like opening sound device several times
@@ -260,7 +264,7 @@ int setup_sound (void)
 	//    return 0;
 
 #ifdef DEBUG_SOUND
-    dbg(" sound.c : ! setup_sound");
+    dbg(" sound.c : ! setup_sound\n");
 #endif
     return 1;
 }
@@ -268,7 +272,7 @@ int setup_sound (void)
 static int open_sound (void)
 {
 #ifdef DEBUG_SOUND
-    dbg("sound.c : open_sound");
+    dbg("sound.c : open_sound\n");
 #endif
 
 	// Android does not like opening sound device several times
@@ -282,7 +286,7 @@ static int open_sound (void)
     sound_available = 1;
 
 #ifdef DEBUG_SOUND
-    dbg(" sound.c : ! open_sound");
+    dbg(" sound.c : ! open_sound\n");
 #endif
     return 1;
 }
@@ -290,18 +294,20 @@ static int open_sound (void)
 void close_sound (void)
 {
 #ifdef DEBUG_SOUND
-    dbg("sound.c : close_sound");
+    dbg("sound.c : close_sound\n");
 #endif
     if (!have_sound)
 	return;
 
     // testing shows that reopenning sound device is not a good idea on gp2x (causes random sound driver crashes)
     // we will close it on real exit instead
-    //gp2x_stop_sound();
+#ifdef RASPBERRY
+    gp2x_stop_sound();
+#endif
     have_sound = 0;
 
 #ifdef DEBUG_SOUND
-    dbg(" sound.c : ! close_sound");
+    dbg(" sound.c : ! close_sound\n");
 #endif
 }
 
@@ -322,58 +328,58 @@ int init_sound (void)
 void pause_sound (void)
 {
 #ifdef DEBUG_SOUND
-    dbg("sound.c : pause_sound");
+    dbg("sound.c : pause_sound\n");
 #endif
 
 	SDL_PauseAudio (1);
     /* nothing to do */
 
 #ifdef DEBUG_SOUND
-    dbg(" sound.c : ! pause_sound");
+    dbg(" sound.c : ! pause_sound\n");
 #endif
 }
 
 void resume_sound (void)
 {
 #ifdef DEBUG_SOUND
-    dbg("sound.c : resume_sound");
+    dbg("sound.c : resume_sound\n");
 #endif
 
 	SDL_PauseAudio (0);
     /* nothing to do */
 
 #ifdef DEBUG_SOUND
-    dbg(" sound.c : ! resume_sound");
+    dbg(" sound.c : ! resume_sound\n");
 #endif
 }
 
 void uae4all_init_sound(void)
 {
 #ifdef DEBUG_SOUND
-    dbg("sound.c : uae4all_init_sound");
+    dbg("sound.c : uae4all_init_sound\n");
 #endif
 #ifdef DEBUG_SOUND
-    dbg(" sound.c : ! uae4all_init_sound");
+    dbg(" sound.c : ! uae4all_init_sound\n");
 #endif
 }
 
 void uae4all_pause_music(void)
 {
 #ifdef DEBUG_SOUND
-    dbg("sound.c : pause_music");
+    dbg("sound.c : pause_music\n");
 #endif
 #ifdef DEBUG_SOUND
-    dbg(" sound.c : ! pause_music");
+    dbg(" sound.c : ! pause_music\n");
 #endif
 }
 
 void uae4all_resume_music(void)
 {
 #ifdef DEBUG_SOUND
-    dbg("sound.c : resume_music");
+    dbg("sound.c : resume_music\n");
 #endif
 #ifdef DEBUG_SOUND
-    dbg(" sound.c : ! resume_music");
+    dbg(" sound.c : ! resume_music\n");
 #endif
 }
 

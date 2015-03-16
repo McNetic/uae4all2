@@ -220,11 +220,12 @@ void real_main (int argc, char **argv)
     /* PocketUAE prefs */
     default_prefs_uae (&currprefs);
     default_prefs();
+
+    // Set everthing to default and clear HD settings
+    SetDefaultMenuSettings(1);
 #ifdef GP2X
     gp2x_init(argc, argv);
 #endif
-		// Set everthing to default and clear HD settings
-		SetDefaultMenuSettings(1);
     loadconfig (1);
 
     if (! graphics_setup ()) {
